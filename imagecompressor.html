@@ -1,0 +1,543 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+        
+        <style>
+            body{margin:0;
+            background:linear-gradient(0deg,rgb(21, 121, 66),rgb(48, 56, 12),rgb(7, 4, 49));
+            color:white;
+            font-weight:lighter;
+
+              font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+
+              user-select: none;
+              overflow-x: hidden;
+         
+            
+
+            }
+
+            #chooseDimensions{
+               display:none;
+            }
+            #originalCanvas{
+                background:pink;
+               display: none;
+            }
+            #can_for_download{
+               display: none; 
+                background: yellow;
+            }
+           
+
+        
+            #showImage{
+                border:2.4px solid black;
+                background-color: coral;
+            }
+            #download{
+                background-color: rgb(28, 21, 48);
+                padding:13px;
+                
+                font-weight: 700;
+                border-radius: 20px;
+                outline:none;
+                color:white;
+            }
+           #download:active{
+               background-color: red;
+           }
+           #originaldimensions:active{
+               background-color: red;
+           }
+           #originaldimensions{
+            background-color: rgb(28, 21, 48);
+               outline: none;
+               border-radius: 10px;
+               padding: 4px;
+             
+               color:white;
+           }
+        
+           @keyframes anim{
+               0%{
+                   letter-spacing:2px;
+                   color: white;
+               }
+               100%{
+                   letter-spacing:5px;
+                  
+               }
+           }
+           #imagedimensions{
+               color:yellow;
+           }
+           #imgInput{
+               border:1px solid white;
+               padding: 4px;
+               
+           }
+         h1{
+             color:yellow;
+             font-size: 34px;
+             animation: anim 3s alternate 1;
+         }
+         @keyframes anim {
+             0%{
+                 letter-spacing: 0px;
+             }
+             30%{
+                 letter-spacing: 3px;
+
+             }
+             100%{
+                 letter-spacing: 0px;
+             }
+         }
+         #footer{
+             width: 100%;
+             height: 150px;
+             background-color: rgb(6, 3, 15);
+             background-color: transparent;
+             opacity: 1;
+             padding: 10px;
+             color: black;
+
+         }
+         h5{
+             display: inline;
+         }
+         hr{
+             width: 600%;
+         }
+
+        
+        </style>
+    </head>
+
+    <title>
+        Image compressor 
+    </title>
+    <body>
+
+
+        <center>
+            <h1>Image Compressor</h1>
+            <h3>Compress your images easily!</h3>
+        </center>
+            <ol>Features
+                <li>Easy to use</li>
+                <li>Color to grayscale conversion</li>
+                <li>Adjust brightness</li>
+                <li>Find dimesions of your image</li>
+            </ol>
+
+        <center>
+            <input type="file" id="imgInput">
+            <br>
+            <br>
+            <div id="imageDimensions"></div><br>
+            <canvas id="showImage"></canvas>
+            <canvas id="originalCanvas"></canvas>
+            <br>
+            <br>
+            <div id="chooseDimensions">
+               
+                  
+
+                Brightness <input id="brightness" type="range" min="-90" max="90"><br><button id='originaldimensions' onclick="originalBrightness(0)">Original Brightness</button>
+                <br><br>
+                
+               Grayscale <input type="radio" id="colorRadioId" onchange="colorSelection('g')" value="g" name="colorSelection">
+               <br>
+                Color <input type="radio" id="colorRadioId" onchange="colorSelection('c')"  checked value="c" name="colorSelection">
+                <br>
+               <br>
+              
+                <button id="download" onclick="downloadFunc()">DOWNLOAD</button><br><br><br>
+                <canvas id="can_for_download"></canvas>
+            </div>
+       
+          
+        </center>
+        <br><br><br>
+        <hr>
+        <div id="footer">
+            <center>© Copyright 2020 rudra pratap singh<br>
+                All Rights Reserved
+            
+            <br><br>
+            <a target="_blank" style="color:yellow;" href="https://www.linkedin.com/in/rudra-pratap-singh-412024184">LinkedIn</a> | <a style="color:yellow;" href="mailto:srudra754@gmail.com">Gmail</a>
+            <br><br>
+            <div style="color:wheat" >
+          <a   style="color:white;" target="_blank" href="https://rudraworks.github.io/my-blog/privacy.html">  <h5>Privacy</h5> </a>|
+           <a  style="color:white;" target="_blank" href="https://rudraworks.github.io/my-blog/disclaimer.html"><h5>Disclaimer</h5></a> |
+           <a  style="color:white;" target="_blank" href="https://rudraworks.github.io/my-blog/terms.html"><h5>Terms</h5></a>|
+           <a  style="color:white;" target="_blank" href="mailto:srudra754@gmail.com"><h5>Contact</h5></a>
+           
+         </div>
+            </center>
+            
+       
+          
+        </div>
+       
+    </body>
+
+    <script>
+        var showImageCanvas=document.getElementById('showImage');
+        var showImageCtx=showImageCanvas.getContext('2d');
+        var originalCanvas=document.getElementById("originalCanvas");
+        var originalCanvasCtx=originalCanvas.getContext('2d');
+        
+       
+
+
+        if(innerHeight>=innerWidth)
+        {
+            showImageCanvas.width=innerWidth/1.5;
+            showImageCanvas.height=innerHeight/2;
+        }
+        else{
+            showImageCanvas.width=innerWidth/3;
+            showImageCanvas.height=innerHeight/1.5;
+        }
+
+       if(innerHeight>innerWidth)
+       {
+           originalCanvas.width=innerWidth/1.5;
+           originalCanvas.height=innerHeight/2;
+       }
+       else{
+            originalCanvas.width=innerWidth/1.5;
+           originalCanvas.height=innerHeight/1.5;
+       }
+        
+
+
+        /// user inputs ///
+      
+
+        var download_button=document.getElementById("download");
+        //// important image /////
+        var image;
+
+        var brightness=document.getElementById("brightness");
+        brightness.addEventListener('input',imageProcessingFunction);
+
+        var colorSelectionValue;
+        var depthSelectionValue=255;
+
+
+        function originalBrightness(value)
+        {
+            brightness.value=value;
+            imageProcessingFunction();
+        }
+
+       
+       
+       // alert(depthSelection[depthSelection.selectedIndex].value);
+       
+         function colorSelection(colorvalue)
+         {
+             colorSelectionValue=colorvalue;
+            //alert(colorSelectionValue);
+            imageProcessingFunction()
+            
+         }
+       
+        
+
+
+         var imgd,imgdOriginal;
+        var pixels,pixelsOriginal;
+
+       // var isDither=0;
+
+        function imageProcessingFunction()
+        {
+
+
+            imgdOriginal=originalCanvasCtx.getImageData(0,0,showImageCanvas.width,showImageCanvas.height);
+            imgd=imgdOriginal;
+            pixels=imgd.data;
+
+            function grayscaling()
+            {
+
+                for(var y=0;y<showImageCanvas.height;++y)
+                {
+                    for(var x=0;x<showImageCanvas.width;++x)
+                    {
+                        var i=(x+y*showImageCanvas.width)*4;
+                        var avg=(pixels[i]+pixels[i+1]+pixels[i+2])/3;
+                        pixels[i]=avg;
+                        pixels[i+1]=avg;
+                        pixels[i+2]=avg;
+                    }
+                }
+               
+               // showImageCtx.putImageData(imgd,0,0);
+               
+            }
+            if(colorSelectionValue=='g')
+             grayscaling();
+
+             function KeepInRange(value)
+                {
+                     if(value>255)
+                       return 255;
+
+                       if(value<0)
+                            return 0;
+
+                   else 
+                      return value;
+                 }
+          
+          //   brightness
+            var bright=parseInt(brightness.value); 
+            var f=1;
+            for(var i=0;i<pixels.length;i+=4)
+            {
+                pixels[i]=KeepInRange(f*pixels[i]+f*bright);
+                pixels[i+1]=KeepInRange(1*pixels[i+1]+f*bright);
+                pixels[i+2]=KeepInRange(f*pixels[i+2]+1*bright);
+            }    
+
+            var factor=31;
+           
+                 
+            function indexReturn(x,y)
+            {
+                return x+y*4*imgd.width;
+            }
+
+            for(var y=0;y<imgd.height-1;y+=1)
+
+            {
+                for(var x=4;x<(4*imgd.width)-4;x+=4)
+                {
+                
+
+                    var index=indexReturn(x,y);
+
+                //compression
+
+                    var oldR=pixels[index];
+                    var oldG=pixels[index+1];
+                    var oldB=pixels[index+2];
+
+                    
+                    var newR=Math.round(factor*oldR/255)*(255/factor);
+                    var newG=Math.round(factor*oldG/255)*(255/factor);
+                    var newB=Math.round(factor*oldB/255)*(255/factor);
+
+                    pixels[index]=newR;
+                    pixels[index+1]=newG;
+                    pixels[index+2]=newB;
+
+                
+                    
+                
+                }    
+
+            }
+
+
+
+            showImageCtx.putImageData(imgd,0,0);
+
+       }
+
+        var imageInput=document.getElementById('imgInput');
+        imageInput.addEventListener('input',imageInputFunc);
+        function imageInputFunc()
+        {
+            var freader= new FileReader();
+            freader.readAsDataURL(imageInput.files[0]);
+            freader.onloadend=function(event)
+            {
+               
+                showImage_on_canvas_func(event.target.result);
+            }
+        }
+        function showImage_on_canvas_func(srcc)
+        {
+            image=new Image();
+            image.src=srcc;
+            image.onload=function()
+            {
+                 showImageCtx.drawImage(image,0,0,image.width,image.height,0,0,showImageCanvas.width,showImageCanvas.height);
+
+                 originalCanvasCtx.drawImage(image,0,0,image.width,image.height,0,0,showImageCanvas.width,showImageCanvas.height);
+
+                 var imageDimensions=document.getElementById('imageDimensions');
+                 imageDimensions.innerHTML="Width and height of the original image<br> Width: "+image.width+" , Height: "+image.height;
+
+                 var chooseDimensions=document.getElementById("chooseDimensions");
+                 chooseDimensions.style.display="initial";
+
+                
+ 
+                 imgdOriginal=originalCanvasCtx.getImageData(0,0,showImageCanvas.width,showImageCanvas.height);
+                
+              
+                 imageProcessingFunction();
+            }
+           
+        }
+
+        
+      function downloadFunc()
+      {
+                  
+                  
+               
+                 
+                  
+                    //    if(parseInt(winput.value)<=0 ||parseInt(hinput.value)<=0 || winput.value=="" || hinput.value=="" )
+                    //    alert("Invalid input of dimensions!!")
+
+                    //    else if(parseInt(winput.value)>5000 || parseInt(hinput.value)>5000)
+                    //    alert("Dimensions are too big!!! Consider entering lower dimesions")
+                       
+                       {
+
+
+                       
+
+                                            var can=document.getElementById("can_for_download");
+                                        can.width=image.width/2;
+                                        can.height=image.height/2;
+                    
+                                        
+                                        var ctx=can.getContext('2d');
+                                        ctx.drawImage(image,0,0,image.width,image.height,0,0,can.width,can.height);
+                                        var imgdD=ctx.getImageData(0,0,can.width,can.height);
+                                        var pixelsD=imgdD.data;
+
+
+                                        function grayscalingD()
+                                            {
+
+                                                for(var y=0;y<can.height;++y)
+                                                {
+                                                    for(var x=0;x<can.width;++x)
+                                                    {
+                                                        var i=(x+y*can.width)*4;
+                                                        var avg=(pixelsD[i]+pixelsD[i+1]+pixelsD[i+2])/3;
+                                                        pixelsD[i]=avg;
+                                                        pixelsD[i+1]=avg;
+                                                        pixelsD[i+2]=avg;
+                                                    }
+                                                }
+                                            
+                                            // showImageCtx.putImageData(imgd,0,0);
+                                            
+                                            }
+                                            if(colorSelectionValue=='g')
+                                            grayscalingD();
+
+                                            function KeepInRangeD(value)
+                                                {
+                                                    if(value>255)
+                                                    return 255;
+
+                                                    if(value<0)
+                                                            return 0;
+
+                                                else 
+                                                    return value;
+                                                }
+                                        
+                                        //   brightness
+                                            var bright=parseInt(brightness.value); 
+                                            var f=1;
+                                            for(var i=0;i<pixelsD.length;i+=4)
+                                            {
+                                                pixelsD[i]=KeepInRangeD(f*pixelsD[i]+f*bright);
+                                                pixelsD[i+1]=KeepInRangeD(1*pixelsD[i+1]+f*bright);
+                                                pixelsD[i+2]=KeepInRangeD(f*pixelsD[i+2]+1*bright);
+                                            }    
+
+                                            var factor=31;
+                                        
+                                                
+                                            function indexReturnD(x,y)
+                                            {
+                                                return x+y*4*imgdD.width;
+                                            }
+
+                                            for(var y=0;y<imgdD.height-1;y+=1)
+
+                                            {
+                                                for(var x=4;x<(4*imgdD.width)-4;x+=4)
+                                                {
+                                                
+
+                                                    var index=indexReturnD(x,y);
+
+                                                //compression
+
+                                                    var oldR=pixelsD[index];
+                                                    var oldG=pixelsD[index+1];
+                                                    var oldB=pixelsD[index+2];
+
+                                                    
+                                                    var newR=Math.round(factor*oldR/255)*(255/factor);
+                                                    var newG=Math.round(factor*oldG/255)*(255/factor);
+                                                    var newB=Math.round(factor*oldB/255)*(255/factor);
+
+                                                    pixelsD[index]=newR;
+                                                    pixelsD[index+1]=newG;
+                                                    pixelsD[index+2]=newB;
+
+                                                
+                                                    
+                                                    
+                                                
+                                                }    
+
+                                            }
+
+
+
+                                            ctx.putImageData(imgdD,0,0);
+
+                                    function downloadImg()
+                                    {   
+                                        var date=new Date();
+                
+                                        var seconds=date.getSeconds();
+                                        var hours=date.getHours();
+                                        var min=date.getMinutes();
+                                        var combinedTime=hours+"_"+min+"_"+seconds+".png";
+    
+                                       // alert(combinedTime);
+                                        var link=document.createElement('a');
+                                        link.download=combinedTime;//'pattern'+(Math.round(Math.random()*1000))+'.png';
+                                        link.href=can.toDataURL();
+                                       link.click();
+                                    //     // download.disabled=false;
+                                    //    loading.style.display="none";
+
+                                      
+                                    }
+
+                                    downloadImg();
+
+                                    
+
+                            }
+
+                       
+                 
+                    
+                
+
+      }
+    </script>
+</html>
